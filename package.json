@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vchagaev/shri-school-lib-task-2.git"
+    "url": "git+https://github.com/vchagaev/shri-task2-school.js.git"
   },
   "keywords": [
     "shri",
@@ -17,9 +17,9 @@
   "author": "Vladislav Chagaev",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vchagaev/shri-school-lib-task-2/issues"
+    "url": "https://github.com/vchagaev/shri-task2-school.js/issues"
   },
-  "homepage": "https://github.com/vchagaev/shri-school-lib-task-2#readme",
+  "homepage": "https://github.com/vchagaev/shri-task2-school.js#readme",
   "devDependencies": {
     "dexie": "^1.3.6",
     "eslint": "^2.8.0",
