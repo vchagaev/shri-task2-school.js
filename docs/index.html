@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>school.js Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">school.js</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="School.html">School</a></li><li><a href="SchoolArray.html">SchoolArray</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html">Global</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>school.js</h1><h2>Для чего?</h2><p>Библиотека предосталяет простой программный интерфейс для работы с процессом обучения ШРИ.<br>
+Для хранения используется IndexedDB, но вам совсем необязательно знать ее особенности.</p>
+<h2>Что умеет</h2><ul>
+<li><h5>Инициализировать курс</h5><pre class="prettyprint source lang-javascript"><code>const shri = new School('Shri-2016-Moscow');</code></pre></li>
+<li><h5>Получать все элементы колекции (students, mentors, tasks)</h5><pre class="prettyprint source lang-javascript"><code>shri
+  .getCollection('students')
+  .then((result) => {
+      // your code
+  });</code></pre></li>
+<li><h5>Получать элементы по условию</h5><pre class="prettyprint source lang-javascript"><code>shri
+  .getCollectionWhere('students', 'team', 'SuperStars')
+  .then((result) => {
+      // your code
+  });</code></pre></li>
+<li><h5>Создавать студентов, менторов, задания</h5><pre class="prettyprint source lang-javascript"><code>shri
+  .getCollection('tasks')
+  .then((result) => {
+      result.add({name: 'CSS project', type: 'team'});
+  });</code></pre></li>
+<li><h5>Обновлять (например выставление оценки группе)</h5><pre class="prettyprint source lang-javascript"><code>const taskId = 1;
+shri
+  .getCollectionWhere('students', 'team', 'SupreStars')
+  .then((result) => {
+      result.update({taskId: 5}); // five for all team
+  });</code></pre></li>
+<li><h5>Удалять и поддерживать целостность БД</h5><pre class="prettyprint source lang-javascript"><code>shri
+  .getCollectionWhere('students', 'id', 2)
+  .then((result) => {
+      result.remove();
+  });</code></pre></li>
+<li><h5>Решать задачу распределения студентов по менторам <em>(используется алгоритм устойчивых паросочетаний)</em></h5></li>
+</ul>
+<pre class="prettyprint source lang-javascript"><code>shri.transaction(() => {
+    shri
+        .getCollection('students')
+        .then((result) => {
+            result.add([[
+                {name: 'student1', prefList: [2, 1]}, // Список с предпочтениями,
+                {name: 'student2', prefList: [1, 2]}, // где ид с 0 индексом - самй желаемый ментор
+                {name: 'student3', prefList: [1, 2]},
+                {name: 'student4', prefList: [1, 2]},
+                {name: 'student5', prefList: [1, 2]}
+            ]]);
+        });
+
+    shri
+    .getCollection('mentors')
+    .then((result) => {
+        result.add([[
+            {name: 'mentor1', capacity: 1, prefList: [1, 2, 3, 4, 5]},
+            {name: 'mentor2', capacity: 2, prefList: [1, 2, 3, 4, 5]}
+        ]]);
+    });
+}).then(() => {
+    const resultLists = shri.calcPrefLists(); // К ментору1 попадет студент2,
+                                              // а к метору2 попадут студент1 и студент3
+});</code></pre><h2>Документация</h2><p>https://vchagaev.github.io/shri-task2-school.js/docs/index.html</p>
+<h1>Комментарий к заданию</h1><h2>Проектирование</h2><h4>Что же нужно будет пользователю моей библиотеки?</h4><p>Начнем с самого главного - цель библиотеки. Она должна облегчить разработчику приложения для ШРИ работу с данными. Что бы он не задумывался о целостности данных и
+особенностях работы с IndexedDB, а сконцентрировался на логике. Соответственно API должен быть гибким и простым. Я примерно спроектировал имена классов и как бы я хотел с ними работать
+будь я разработчиком приложения. Изначально я спроектировал с расширением промисов или стэком операций, но понял, что имплеменитировать качественно я такое не смогу, поэтому решил реализовать используя промисы.</p>
+<h4>Выбор места хранения</h4><p>Из цели понятно, что придется делать CRUD в браузере. Для такой задачи необходимо хранилище, а так как бэкэнд у нас не подразумевается, то
+такое хранилище должно быть в браузере. Из выбора у нас LocalStorage, IndexDB, WebSQL и кэш. LocalStorage для такой задачи совершенно не подходит как и кэш.
+WebSQL больше не поддерживается и будущее его не понятно. Из плючов - это SQL а я с ним работал :) IndexedDB NO SQL БД. Исходя из специфики задания, а нам не нужно
+поддерживать какую-то сумашедшую целостность данных я выбрал IndexedDB. Примерно спроектировал как у меня все будет храниться. Самая частая операция - выставление оценок
+и именно под нее проектировал данные.</p>
+<h4>Выбор инструмента для работы с IndexedDB</h4><p>Посмотрев стандартный API IndexedDB и сравнив его с API врапперов и их фичами, то решил использовать wrapper. Мне нужен был
+простой - для запросов и CRUD действий и простым интерфейсом. Выбор пал на Dexie.js https://github.com/dfahlander/Dexie.js.
+Легкая, документируемая, без вербозного API. Как раз то что нужно.</p>
+<h2>Тестирование</h2><p>Для тестирования решил применить Jasmine и Karma. Jasmine - хороший фреймворк, которым я пользовался. Тестировать нужно в боевой среде - браузере. Поэтому Karma - для прогонки тестов в браузере и анализ покрытия кода.
+ Вместе хорошо работают + не вижу причин не использовать их или использовать что-то другое. Покрыл бибилиотеку тестами на все основные кейсы.</p>
+<h2>Реализация</h2><p> При реализации использовал промисы для работы с асинхронностью. В целом старался придерживаться стандарту ECMA 6. Для код-стайла JSCS, а линтер - ESLint.
+  Старался придерживаться код стайлу https://github.com/ymaps/codestyle. При реализации решил расширить массив для работы с коллекциями.</p>
+<h2>Экспорт и импорт</h2><p>  Экспортировать и импортировать решил использую JSON. В принице с ними ничего сложного, так как IndexedDB в себе хранит объекты.</p>
+<h2>Документация</h2><p>Сгенерировал докуменацию на основе JSDoc комментов. Использовал описание классов.</p>
+<h2>Веб-интерфейс</h2><p>Для реализации веб-интерфейса планировал использваоть какой-нибудь MVC-фреймворк (Angular или поразбирался бы с BEM MVC).
+По возможности использовал бы Drag &amp; Drop (ранжирование списков предпочтений или распределение студентов по командам)</p></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	Vladislav Chagaev
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-04-23T01:54:11+03:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
