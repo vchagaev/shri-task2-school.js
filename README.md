@@ -6,7 +6,7 @@
 ##### Инициализировать курс
 
 Для работы бибилиотеки необходимо сначало подключить скрипт Dexie.js<br>
-`<script src="https://npmcdn.com/dexie/dist/dexie.js"></script>`
+`<script src="https://unpkg.com/dexie/dist/dexie.js"></script>`
 
 ```javascript
 const shri = new School('Shri-2016-Moscow');
